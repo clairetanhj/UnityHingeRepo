@@ -13,13 +13,12 @@ public class Rotator : MonoBehaviour
     void Start()
     {
         angle = 0.0f;
-        transform.Rotate(angle, 0.0f, 0.0f);
+        transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
     }
 
     // Update is called once per frame
     void Update()
-    {
-        
+    {   
         if(Input.GetAxisRaw("Vertical") == 1 && angle < maxangle) {
             transform.Rotate(0.8f, 0.0f, 0.0f);
             angle += 0.8f;
@@ -29,7 +28,7 @@ public class Rotator : MonoBehaviour
             transform.Rotate(-0.8f, 0.0f, 0.0f);
             angle -= 0.8f;
         }
-        
+   
         if(Input.GetButton("Jump")){
             transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
             angle = 0.0f;

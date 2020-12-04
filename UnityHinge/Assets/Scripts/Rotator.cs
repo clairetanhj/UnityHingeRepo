@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class Rotator : MonoBehaviour
 {
@@ -8,34 +9,47 @@ public class Rotator : MonoBehaviour
     public float minangle;
     
     private float angle;
+    private float newangle;
+    private float origin;
+    private float neworigin;
 
-    // Start is called before the first frame update
     void Start()
     {
-        angle = 0.0f;
-        transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+        origin = UnityEditor.TransformUtils.GetInspectorRotation(gameObject.transform).x;
+        angle = origin;
+        neworigin = origin;
+        newangle = angle;
+
+        Debug.Log("Origin: " + origin);
     }
 
-    // Update is called once per frame
     void Update()
-    {   
-        if(Input.GetAxisRaw("Vertical") == 1 && angle < maxangle) {
-            transform.Rotate(0.8f, 0.0f, 0.0f);
-            angle += 0.8f;
+    {           
+        if(Input.GetAxisRaw("Vertical") == 1 && angle < origin+maxangle) {
+            transform.Rotate(1.0f, 0.0f, 0.0f);
         }
 
-        if(Input.GetAxisRaw("Vertical") == -1 && minangle < angle) {
-            transform.Rotate(-0.8f, 0.0f, 0.0f);
-            angle -= 0.8f;
+        if(Input.GetAxisRaw("Vertical") == -1 && origin+minangle < angle) {
+            transform.Rotate(-1.0f, 0.0f, 0.0f);
         }
    
         if(Input.GetButton("Jump")){
             transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-            angle = 0.0f;
         }
+
+        newangle = UnityEditor.TransformUtils.GetInspectorRotation(gameObject.transform).x;
         
-        if(angle > 180.0f) {angle -= 360.0f;}
-        if(angle < -180.0f) {angle += 360.0f;}
-        print(angle);
+        if(origin != neworigin) {
+            origin = neworigin;
+            Debug.Log("Origin: " + origin);
+        }
+        if(angle != newangle) {
+            angle = newangle;
+            Debug.Log("Angle: " + angle);
+        }
+    }
+
+    public void SetOrigin() {
+        neworigin = angle;
     }
 }

@@ -5,48 +5,54 @@ using UnityEditor;
 
 public class Rotator : MonoBehaviour
 {
-    public float maxangle;
-    public float minangle;
+    public float maxbound;
+    public float minbound;
     
     private float angle;
     private float newangle;
     private float origin;
     private float neworigin;
+    private float maxangle;
+    private float minangle;
 
     void Start()
     {
         origin = UnityEditor.TransformUtils.GetInspectorRotation(gameObject.transform).x;
-        angle = origin;
-        neworigin = origin;
-        newangle = angle;
+        neworigin = angle = newangle = origin;
+        maxangle = origin + maxbound;
+        minangle = origin + minbound;
 
         Debug.Log("Origin: " + origin);
     }
 
     void Update()
-    {           
-        if(Input.GetAxisRaw("Vertical") == 1 && angle < origin+maxangle) {
+    {   
+        if(origin != neworigin) {
+            origin = neworigin;
+            Debug.Log("Origin: " + origin);
+            maxangle = origin + maxbound;
+            minangle = origin + minbound;
+        }        
+
+        if(Input.GetAxisRaw("Vertical") == 1 && angle < maxangle) {
             transform.Rotate(1.0f, 0.0f, 0.0f);
         }
 
-        if(Input.GetAxisRaw("Vertical") == -1 && origin+minangle < angle) {
+        if(Input.GetAxisRaw("Vertical") == -1 && angle > minangle) {
             transform.Rotate(-1.0f, 0.0f, 0.0f);
         }
    
-        if(Input.GetButton("Jump")){
-            transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+        if(Input.GetButton("Jump")) {
+            transform.localRotation = Quaternion.Euler(origin, 0.0f, 0.0f);
         }
 
         newangle = UnityEditor.TransformUtils.GetInspectorRotation(gameObject.transform).x;
         
-        if(origin != neworigin) {
-            origin = neworigin;
-            Debug.Log("Origin: " + origin);
-        }
         if(angle != newangle) {
             angle = newangle;
             Debug.Log("Angle: " + angle);
         }
+
     }
 
     public void SetOrigin() {

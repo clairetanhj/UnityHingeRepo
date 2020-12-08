@@ -7,13 +7,12 @@ public class Rotator : MonoBehaviour
 {
     public float maxbound;
     public float minbound;
+    public float angleFromOrigin;
     
     private float angle;
     private float newangle;
     private float origin;
     private float neworigin;
-    private float maxangle;
-    private float minangle;
 
     void Start()
     {        
@@ -27,8 +26,6 @@ public class Rotator : MonoBehaviour
         }
         
         neworigin = angle = newangle = origin;
-        maxangle = origin + maxbound;
-        minangle = origin + minbound;
 
         Debug.Log("Origin: " + origin);
     }
@@ -38,19 +35,21 @@ public class Rotator : MonoBehaviour
         if(origin != neworigin) {
             origin = neworigin;
             Debug.Log("Origin: " + origin);
-            maxangle = origin + maxbound;
-            minangle = origin + minbound;
 
             SaveAngle saveAngle = new SaveAngle { savedOrigin = origin };
             string json = JsonUtility.ToJson(saveAngle);
             System.IO.File.WriteAllText(Application.dataPath + "/save.json", json);
-        }        
+        }  
 
-        if(Input.GetAxisRaw("Vertical") == 1 && angle < maxangle) {
+        angleFromOrigin = angle - origin;
+        if(angleFromOrigin>180) angleFromOrigin -= 360;
+        if(angleFromOrigin<-180) angleFromOrigin += 360;
+
+        if(Input.GetAxisRaw("Vertical") == 1 && angleFromOrigin < maxbound) {
             transform.Rotate(1.0f, 0.0f, 0.0f);
         }
 
-        if(Input.GetAxisRaw("Vertical") == -1 && angle > minangle) {
+        if(Input.GetAxisRaw("Vertical") == -1 && angleFromOrigin > minbound) {
             transform.Rotate(-1.0f, 0.0f, 0.0f);
         }
    
@@ -62,7 +61,7 @@ public class Rotator : MonoBehaviour
         
         if(angle != newangle) {
             angle = newangle;
-            Debug.Log("Angle: " + angle);
+            Debug.Log("Global Angle: " + angle);
         }
     }
 

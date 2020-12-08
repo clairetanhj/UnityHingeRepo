@@ -11,8 +11,11 @@ public class OriginButton : Editor
         DrawDefaultInspector();
 
         Rotator myScript = (Rotator)target;
-        if(GUILayout.Button("Set Origin"))
-        {
+        // if(GUILayout.Button("Rotate Clockwise")) {
+        //     myScript.Clockwise();
+        // }
+        
+        if(GUILayout.Button("Set Origin")) {
             myScript.SetOrigin();
         }
     }

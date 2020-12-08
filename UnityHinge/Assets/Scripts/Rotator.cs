@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+[ExecuteInEditMode]
 public class Rotator : MonoBehaviour
 {
     public float maxbound;
@@ -17,12 +18,22 @@ public class Rotator : MonoBehaviour
 
     void Start()
     {
-        origin = UnityEditor.TransformUtils.GetInspectorRotation(gameObject.transform).x;
-        neworigin = angle = newangle = origin;
+        
+        if(Application.isPlaying)
+        {
+            origin = UnityEditor.TransformUtils.GetInspectorRotation(gameObject.transform).x;
+        } else {
+            Debug.Log("origin" + origin);
+            Debug.Log("angle" + angle);
+            transform.localRotation = Quaternion.Euler(origin, 0.0f, 0.0f);
+        }
+
+        neworigin = angle = origin;
         maxangle = origin + maxbound;
         minangle = origin + minbound;
 
         Debug.Log("Origin: " + origin);
+        Debug.Log("start");
     }
 
     void Update()
@@ -34,15 +45,18 @@ public class Rotator : MonoBehaviour
             minangle = origin + minbound;
         }        
 
-        if(Input.GetAxisRaw("Vertical") == 1 && angle < maxangle) {
+        // EventType.KeyDown
+        // Event.keyCode
+
+        if(Input.GetKey(KeyCode.UpArrow) && angle < maxangle) {
             transform.Rotate(1.0f, 0.0f, 0.0f);
         }
 
-        if(Input.GetAxisRaw("Vertical") == -1 && angle > minangle) {
+        if(Input.GetKey(KeyCode.DownArrow) && angle > minangle) {
             transform.Rotate(-1.0f, 0.0f, 0.0f);
         }
    
-        if(Input.GetButton("Jump")) {
+        if (Input.GetKey(KeyCode.Space)) {
             transform.localRotation = Quaternion.Euler(origin, 0.0f, 0.0f);
         }
 
@@ -52,8 +66,11 @@ public class Rotator : MonoBehaviour
             angle = newangle;
             Debug.Log("Angle: " + angle);
         }
-
     }
+
+    // public void Clockwise() {
+    //     transform.Rotate(1.0f, 0.0f, 0.0f);
+    // }
 
     public void SetOrigin() {
         neworigin = angle;

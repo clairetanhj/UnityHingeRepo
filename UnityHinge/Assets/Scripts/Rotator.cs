@@ -20,7 +20,7 @@ public class Rotator : MonoBehaviour
         if (System.IO.File.Exists(Application.dataPath + "/save.json")) {
             string saveString = System.IO.File.ReadAllText(Application.dataPath + "/save.json");
             SaveAngle loadedData = JsonUtility.FromJson<SaveAngle>(saveString);
-            origin = loadedData.angleData;
+            origin = loadedData.savedOrigin;
             transform.localRotation = Quaternion.Euler(origin, 0.0f, 0.0f);
         } else {
             origin = UnityEditor.TransformUtils.GetInspectorRotation(gameObject.transform).x;
@@ -40,6 +40,10 @@ public class Rotator : MonoBehaviour
             Debug.Log("Origin: " + origin);
             maxangle = origin + maxbound;
             minangle = origin + minbound;
+
+            SaveAngle saveAngle = new SaveAngle { savedOrigin = origin };
+            string json = JsonUtility.ToJson(saveAngle);
+            System.IO.File.WriteAllText(Application.dataPath + "/save.json", json);
         }        
 
         if(Input.GetAxisRaw("Vertical") == 1 && angle < maxangle) {
@@ -60,11 +64,6 @@ public class Rotator : MonoBehaviour
             angle = newangle;
             Debug.Log("Angle: " + angle);
         }
-
-        //save
-        SaveAngle saveAngle = new SaveAngle { angleData = angle };
-        string json = JsonUtility.ToJson(saveAngle);
-        System.IO.File.WriteAllText(Application.dataPath + "/save.json", json);
     }
 
     public void SetOrigin() {
@@ -72,6 +71,6 @@ public class Rotator : MonoBehaviour
     }
 
     private class SaveAngle {
-        public float angleData;
+        public float savedOrigin;
     }
 }
